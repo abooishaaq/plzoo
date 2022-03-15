@@ -78,7 +78,7 @@ cow ;;
 # We define the operator rec which calculates the fixed point of the
 # given function.
 
-let rec = fun f -> { self = fun x -> f this.self x }.self ;;
+let rec = fun f -> { self = fun x -> f this.self x } .self ;;
 
 # A list is an object with a field empty, and a non-empty list must also have
 # fields head and tail. We define a prototype objects for lists. Actual lists

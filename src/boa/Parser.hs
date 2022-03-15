@@ -33,8 +33,8 @@ table =
         [ binary "<" CmpOp Less Ex.AssocLeft
         ]
     ,
-        [ binary "==" CmpOp Equal Ex.AssocLeft
-        , binary "!=" CmpOp Unequal Ex.AssocLeft
+        [ binary "=" CmpOp Equal Ex.AssocLeft
+        , binary "<>" CmpOp Unequal Ex.AssocLeft
         ]
     ,
         [ prefix "not" Not
@@ -115,7 +115,7 @@ fun = do
     reserved "fun"
     v <- identifier
     reservedOp "->"
-    Fun v <$> expr
+    Fun v <$> seqq
 
 letin :: Parser Expr
 letin = do
@@ -160,8 +160,8 @@ assign = do
 
 term :: Parser Expr
 term =
-    try app
-        <|> assign
+    try assign
+        <|> app
         <|> fun
         <|> ifthen
         <|> letin
@@ -173,16 +173,17 @@ expr =
 seqq :: Parser Expr
 seqq =
     expr >>= \x ->
-        ( many1 (reservedOp ";" >> expr)
-            >>= \xs ->
-                return (foldl Seq x xs)
-        )
+        try
+            ( many1 (reservedOp ";" >> expr)
+                >>= \xs ->
+                    return (foldl Seq x xs)
+            )
             <|> return x
 
 exprTop :: Parser TopLevel
 exprTop = do
-    ex <- expr
-    optional $ reservedOp ";;"
+    ex <- seqq
+    reservedOp ";;"
     return $ Expr ex
 
 defTop :: Parser TopLevel
@@ -190,7 +191,7 @@ defTop = do
     reserved "let"
     name <- identifier
     reservedOp "="
-    ex <- expr
+    ex <- seqq
     reservedOp ";;"
     return $ Def name ex
 
