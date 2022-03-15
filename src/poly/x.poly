@@ -1,0 +1,14 @@
+let append = rec append is
+  fun lst1 =>
+    fun lst2 =>
+      match lst1 with
+	  [] => lst2
+	| x::xs => x :: (append xs lst2)
+;;
+
+let flatten = rec flatten is
+    fun lsts =>
+      match lsts with
+	  [] => []
+	| l :: ls => append l (flatten ls)
+;;
