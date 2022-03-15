@@ -29,7 +29,7 @@ data Expr
     | Copy Expr
     | With Expr Expr
     | Project Expr String
-    | Assign Expr Expr
+    | Assign String [String] Expr
     deriving (Show, Eq)
 
 data TopLevel = Expr Expr | Def String Expr

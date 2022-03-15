@@ -154,9 +154,10 @@ app =
 
 assign :: Parser Expr
 assign = do
-    ex1 <- proj
+    v <- identifier
+    x <- many1 (reservedOp "." >> identifier)
     reserved ":="
-    Assign ex1 <$> expr
+    Assign v x <$> expr
 
 term :: Parser Expr
 term =
