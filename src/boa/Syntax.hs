@@ -26,11 +26,11 @@ data Expr
     | Fun String Expr
     | This
     | Object [(String, Expr)]
-    | Copy Expr
     | With Expr Expr
     | Project Expr String
     | Assign String [String] Expr
     deriving (Show, Eq)
+    -- | Copy Expr
 
 data TopLevel = Expr Expr | Def String Expr
     deriving (Show, Eq)

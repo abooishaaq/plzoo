@@ -93,12 +93,12 @@ nonapp = do
         <|> obj
         <|> this
         <|> skip
-        <|> copy
+        -- <|> copy
 
-copy :: Parser Expr
-copy = do
-    reserved "copy"
-    Copy <$> with
+-- copy :: Parser Expr
+-- copy = do
+--     reserved "copy"
+--     Copy <$> with
 
 ifthen :: Parser Expr
 ifthen = do
