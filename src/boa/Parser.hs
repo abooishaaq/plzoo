@@ -54,7 +54,7 @@ int = do
 bool :: Parser Expr
 bool =
     (reserved "true" >> return (Bool True))
-        <|> (reserved "false" >> return (Bool True))
+        <|> (reserved "false" >> return (Bool False))
 
 variable :: Parser Expr
 variable = do
