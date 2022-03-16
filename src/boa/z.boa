@@ -80,6 +80,10 @@ cow ;;
 
 let rec = fun f -> ({ self = fun x -> f this.self x }).self ;;
 
+let fact = rec (fun fact -> fun x -> if x = 1 then 1 else x * fact (x - 1)) ;;
+
+fact 5 ;;
+
 # A list is an object with a field empty, and a non-empty list must also have
 # fields head and tail. We define a prototype objects for lists. Actual lists
 # are obtained by extending this object.
