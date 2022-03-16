@@ -7,6 +7,7 @@ import Text.Parsec (ParseError, char, eof, many, many1, optional, parse, sepBy, 
 import qualified Text.Parsec.Expr as Ex
 import Text.Parsec.String (Parser)
 import qualified Text.Parsec.Token as Tok
+import Syntax (Expr(Snd))
 
 prefix s f = Ex.Prefix (reservedOp s >> return f)
 
@@ -101,6 +102,16 @@ list = do
     reservedOp "]"
     return List
 
+fstt :: Parser Expr
+fstt = do
+    reserved "fst"
+    Fst <$> expr
+
+sndd :: Parser Expr
+sndd = do
+    reserved "snd"
+    Snd <$> expr
+
 aexp :: Parser Expr
 aexp =
     try (parens expr)
@@ -113,6 +124,8 @@ aexp =
         <|> recis
         <|> match
         <|> list
+        <|> fstt
+        <|> sndd
 
 cons :: Parser Expr
 cons =
@@ -126,7 +139,7 @@ cons =
 app :: Parser Expr
 app =
     cons >>= \x ->
-        (many1 aexp >>= \xs -> return (foldl Apply x xs))
+        (many1 cons >>= \xs -> return (foldl Apply x xs))
             <|> return x
 
 term :: Parser Expr

@@ -23,6 +23,8 @@ data Expr
     | Apply Expr Expr
     | Rec String Expr
     | List
+    | Fst Expr
+    | Snd Expr
     | Match Expr Expr String String Expr
     deriving (Show, Eq)
 
@@ -46,6 +48,8 @@ subst m = \case
     Equal e1 e2 -> Equal (subst m e1) (subst m e2)
     Apply e1 e2 -> Apply (subst m e1) (subst m e2)
     Pair e1 e2 -> Pair (subst m e1) (subst m e2)
+    Fst e -> Fst (subst m e)
+    Snd e -> Snd (subst m e)
     If e1 e2 e3 -> If (subst m e1) (subst m e2) (subst m e3)
     Fun x e -> let i = Map.findIndex x m in Fun x (subst (Map.deleteAt i m) e)
     Rec x e -> let i = Map.findIndex x m in Fun x (subst (Map.deleteAt i m) e)

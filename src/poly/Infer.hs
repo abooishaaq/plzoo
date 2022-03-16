@@ -9,6 +9,7 @@ import Control.Monad.Reader
 import Control.Monad.State
 import qualified Data.Map as Map
 import Syntax
+import Syntax (Expr (Fst))
 import Type (TVar (TV), Type (..))
 
 type Infer a =
@@ -186,6 +187,16 @@ infer env = do
             (t1, c1) <- infer env e1
             (t2, c2) <- infer env e2
             return (TTimes t1 t2, c1 ++ c2)
+        Fst e -> do
+            tv1 <- fresh
+            tv2 <- fresh
+            (t1, c1) <- infer env e
+            return (tv1, (t1, TTimes tv1 tv2) : c1)
+        Snd e -> do
+            tv1 <- fresh
+            tv2 <- fresh
+            (t1, c1) <- infer env e
+            return (tv2, (t1, TTimes tv1 tv2) : c1)
         If cond tr fl -> do
             (t1, c1) <- infer env cond
             (t2, c2) <- infer env tr
