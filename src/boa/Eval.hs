@@ -26,7 +26,7 @@ showInt Nothing = ""
 
 showBool :: Maybe Bool -> [Char]
 showBool (Just True) = "true"
-showBool (Just False) = "true"
+showBool (Just False) = "false"
 showBool _ = ""
 
 showObj :: Fields -> String
