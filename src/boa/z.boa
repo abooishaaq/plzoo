@@ -112,6 +112,15 @@ let list = {
     else
       this.cons (f this.head) (this.tail.map f),
 
+  filter = fun f ->
+    if this.empty then
+      this
+    else
+      if f this.head then
+        this.cons (this.head) (this.tail.filter f)
+      else 
+        this.tail.filter f,
+
   append = 
     fun lst1 ->
       fun lst2 ->
@@ -132,3 +141,5 @@ let lis3 = list.append lis1 lis2 ;;
 let x = lis3.get 5 ;;
 
 let b = lis3.map (fun x -> 100 * x) ;;
+
+lis2.filter (fun x -> x % 2 = 0) ;;
