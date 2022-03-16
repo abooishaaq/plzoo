@@ -63,14 +63,14 @@ if (7 with false) then 10 else 20 ;;
 
 let cow = {horn = 7, tail = {a=5, b=6}} ;;
 
-let bull = copy cow ;;
+let bull = cow ;; # this would do a deep copy. there is no shallow copy
 
 bull.horn := 8 ;; # changes only bull
 
 bull ;;
 cow ;;
 
-bull.tail.a := 100 ;; # changes both bull and cow
+bull.tail.a := 100 ;; # changes only bull
 bull ;;
 cow ;;
 
@@ -78,7 +78,7 @@ cow ;;
 # We define the operator rec which calculates the fixed point of the
 # given function.
 
-let rec = fun f -> { self = fun x -> f this.self x } .self ;;
+let rec = fun f -> ({ self = fun x -> f this.self x }).self ;;
 
 # A list is an object with a field empty, and a non-empty list must also have
 # fields head and tail. We define a prototype objects for lists. Actual lists
@@ -93,25 +93,38 @@ let list = {
   nil =  fun _ -> this with { empty = true },
   cons = fun x -> fun xs -> this with { empty = false, head = x, tail = xs },
 
-  iterator = (fun _ ->
-    { elements = this,
-      hasNext = (fun _ -> not this.elements.empty),
-      next = (fun _ -> let x = this.elements.head in this.elements := this.elements.tail; x)
-    }),
+  # This won't work becasue Assign takes an identifier as the first argument.
+  # iterator = (fun _ ->
+  #   { elements = this,
+  #     hasNext = (fun _ -> not this.elements.empty),
+  #     next = (fun _ -> let x = this.elements.head in this.elements := this.elements.tail; x)
+  #   }),
 
-   get = fun n -> if n = 0 then this.head else this.tail.get (n-1),
+  get = fun n -> if n = 0 then this.head else this.tail.get (n-1),
 
-   map = fun f ->
-     if this.empty then
-       this.nil {}
-     else
-       this.cons (f this.head) (this.tail.map f)
+  map = fun f ->
+    if this.empty then
+      this.nil {}
+    else
+      this.cons (f this.head) (this.tail.map f),
+
+  append = 
+    fun lst1 ->
+      fun lst2 ->
+        if lst1.empty then
+          lst2
+        else 
+          this.cons (lst1.head) (this.append (lst1.tail) lst2)
 } ;;
 
 # Examples of lists
 
-let a = list.cons 1 (list.cons 2 (list.cons 3 (list.nil {}))) ;;
+let lis1 = list.cons 1 (list.cons 2 (list.cons 3 (list.nil {}))) ;;
 
-let x = a.get 2 ;;
+let lis2 = list.cons 4 (list.cons 5 (list.cons 6 (list.nil {}))) ;;
 
-let b = a.map (fun x -> 100 * x) ;;
+let lis3 = list.append lis1 lis2 ;;
+
+let x = lis3.get 5 ;;
+
+let b = lis3.map (fun x -> 100 * x) ;;

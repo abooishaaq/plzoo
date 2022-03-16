@@ -6,6 +6,7 @@ executable boa
     main-is: Main.hs
 
     other-modules:
+        Eval
         Lexer
         Parser
         Syntax
