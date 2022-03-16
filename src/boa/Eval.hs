@@ -134,6 +134,9 @@ eval this = \case
             Less -> case (as_int v1, as_int v2) of
                 (Just i1, Just i2) -> return $ mkBool $ i1 < i2
                 _ -> throwError $ TypeExpected TInt
+            More -> case (as_int v1, as_int v2) of
+                (Just i1, Just i2) -> return $ mkBool $ i1 > i2
+                _ -> throwError $ TypeExpected TInt
             _ -> return $ mkBool $ cmpOp op v1 v2
     Not e -> do
         v <- eval this e

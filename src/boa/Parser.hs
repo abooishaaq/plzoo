@@ -31,6 +31,7 @@ table =
         ]
     ,
         [ binary "<" CmpOp Less Ex.AssocLeft
+         , binary ">" CmpOp More Ex.AssocLeft
         ]
     ,
         [ binary "=" CmpOp Equal Ex.AssocLeft

@@ -6,7 +6,7 @@ data ArithOp = Plus | Minus | Times | Divide | Remainder
 data BoolOp = And | Or
     deriving (Show, Eq)
 
-data CmpOp = Less | Equal | Unequal
+data CmpOp = Less | More | Equal | Unequal
     deriving (Show, Eq)
 
 data Expr
