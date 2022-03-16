@@ -22,7 +22,6 @@ runFile name = do
   let res = parseToplevel file
   case res of
     Left err -> print err
-    -- Right decls -> evalStateT (runDecls decls) global
     Right top -> do
       mapM_ pPrint top
       pPrint $ inferTop emptyEnv top
@@ -32,9 +31,9 @@ process line = do
   let res = parseToplevel line
   case res of
     Left err -> print err
-    -- Right decls -> evalStateT (runDecls decls) global 
-    Right decls -> do
-      mapM_ print decls
+    Right top -> do
+      mapM_ print top
+      pPrint $ inferTop emptyEnv top
     
 main :: IO ()
 main = do
