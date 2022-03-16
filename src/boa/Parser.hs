@@ -93,7 +93,8 @@ nonapp = do
         <|> obj
         <|> this
         <|> skip
-        -- <|> copy
+
+-- <|> copy
 
 -- copy :: Parser Expr
 -- copy = do
@@ -175,7 +176,7 @@ seqq :: Parser Expr
 seqq =
     expr >>= \x ->
         try
-            ( many1 (reservedOp ";" >> expr)
+            ( many1 (reservedOp ";" >> seqq)
                 >>= \xs ->
                     return (foldl Seq x xs)
             )
