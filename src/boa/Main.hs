@@ -5,7 +5,6 @@ import Control.Monad.Identity (Identity)
 import Control.Monad.State
 import Control.Monad.Trans (MonadIO (liftIO))
 import Parser (parseToplevel)
-import Syntax
 import System.Console.Haskeline (
     defaultSettings,
     getInputLine,
