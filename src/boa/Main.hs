@@ -13,39 +13,39 @@ import System.Console.Haskeline (
     runInputT,
  )
 
-import Text.Pretty.Simple ( pPrint )
+import Control.Applicative (Alternative (empty))
+import Eval (emptyEnv, evalTop)
 import System.Environment (getArgs)
-
+import Text.Pretty.Simple (pPrint)
 
 runFile :: FilePath -> IO ()
 runFile name = do
-  file <- readFile name
-  let res = parseToplevel file
-  case res of
-    Left err -> print err
-    -- Right decls -> evalStateT (runDecls decls) global
-    Right top -> do
-      mapM_ pPrint top
-    --   pPrint $ inferTop emptyEnv top
+    file <- readFile name
+    let res = parseToplevel file
+    case res of
+        Left err -> print err
+        Right top -> do
+            -- mapM_ pPrint top
+            evalStateT (evalTop top) emptyEnv
 
 process :: String -> IO ()
 process line = do
-  let res = parseToplevel line
-  case res of
-    Left err -> print err
-    -- Right decls -> evalStateT (runDecls decls) global 
-    Right decls -> do
-      mapM_ print decls
-    
+    let res = parseToplevel line
+    case res of
+        Left err -> print err
+        Right top -> do
+            -- mapM_ pPrint top
+            evalStateT (evalTop top) emptyEnv
+
 main :: IO ()
 main = do
-  args <- getArgs
-  case args of
-    [name] -> runFile name
-    _ -> runInputT defaultSettings loop
- where
-  loop = do
-    minput <- getInputLine "λ> "
-    case minput of
-      Nothing -> outputStrLn "Goodbye."
-      Just input -> liftIO (process input) >> loop
+    args <- getArgs
+    case args of
+        [name] -> runFile name
+        _ -> runInputT defaultSettings loop
+  where
+    loop = do
+        minput <- getInputLine "λ> "
+        case minput of
+            Nothing -> outputStrLn "Goodbye."
+            Just input -> liftIO (process input) >> loop
