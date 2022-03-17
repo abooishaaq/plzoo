@@ -95,7 +95,7 @@ typeOf env =
             case t2 of
                 TList t3 -> do
                     t5 <- typeOf env e2
-                    check (Map.insert x t1 (Map.insert x (TList t1) env)) t5 e3
+                    check (Map.insert x t1 (Map.insert y (TList t1) env)) t5 e3
                     return t5
                 t4 -> throwError (TypeError{expected = [TList (TParam (TV "a"))], got = t4})
         Apply e1 e2 -> do
