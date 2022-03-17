@@ -16,6 +16,7 @@ data Value
     | VList Type
     | VPair Value Value
     | VClosure (Thunk -> IO Value)
+    | VRecursive  (Thunk -> IO Value)
 
 instance Show Value where
     show (VInt i) = show i
@@ -24,6 +25,7 @@ instance Show Value where
     show (VPair v1 v2) = "(" ++ show v1 ++ "," ++ show v2 ++ ")"
     show (VList ty) = "[" ++ show ty ++ "]"
     show (VClosure _) = "<closure>"
+    show (VRecursive _) = "<recursive>"
 
 type Env = Map.Map String (IORef Thunk)
 
@@ -121,9 +123,16 @@ eval env = do
                 _ -> error "expected pair"
         Fun x _ e -> do
             return $ VClosure (mkThunk env x e)
+        Rec x _ e -> do
+            return $ VRecursive (mkThunk env x e)
         Apply e1 e2 -> do
             v1 <- eval env e1
             v2 <- eval env e2
             case v1 of
                 (VClosure th) -> th (\() -> return v2)
+                (VRecursive th) -> do
+                    v <- th (\() -> return v1)
+                    case v of 
+                        (VClosure th2) -> th2 (\() -> return v2)
+                        _ -> error "expected closure"
                 _ -> error "expected closure"
