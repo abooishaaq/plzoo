@@ -23,6 +23,29 @@ executable boa
     default-language: Haskell2010
 
 
+executable minihaskell
+    main-is: Main.hs
+
+    other-modules:
+        Check
+        Eval
+        Lexer
+        Parser
+        Syntax
+        Type
+
+    build-depends:    
+          base         
+        , containers 
+        , haskeline  
+        , mtl        
+        , parsec
+        , pretty-simple
+        
+    hs-source-dirs:   src/minihaskell
+    default-language: Haskell2010
+
+
 executable poly
     main-is: Main.hs
 
