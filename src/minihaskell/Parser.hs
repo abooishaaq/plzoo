@@ -102,7 +102,7 @@ ty =
         )
             <|> return x
 
-list :: Parser Type 
+list :: Parser Type
 list = do
     reservedOp "["
     typ <- ty

@@ -13,7 +13,6 @@ import System.Console.Haskeline (
  )
 
 import Control.Applicative (Alternative (empty))
--- import Eval (emptyEnv, evalTop)
 import System.Environment (getArgs)
 import Text.Pretty.Simple (pPrint)
 import qualified Data.Map as Map

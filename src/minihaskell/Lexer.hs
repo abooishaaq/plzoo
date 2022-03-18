@@ -42,7 +42,3 @@ reserved = Tok.reserved lexer
 
 reservedOp :: String -> Parser ()
 reservedOp = Tok.reservedOp lexer
-
-count p = do
-    many1 (try p >> modify (+1))
-    get
