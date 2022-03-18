@@ -7,7 +7,7 @@ import qualified Data.Map as Map
 
 data Expr
     = Var String
-    | Int Int
+    | Int Integer
     | Bool Bool
     | Neg Expr
     | Times Expr Expr

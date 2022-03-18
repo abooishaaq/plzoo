@@ -11,12 +11,12 @@ import Type (Type)
 type Thunk = () -> IO Value
 
 data Value
-    = VInt Int
+    = VInt Integer
     | VBool Bool
     | VList Type
     | VPair Value Value
     | VClosure (Thunk -> IO Value)
-    | VRecursive  (Thunk -> IO Value)
+    | VRecursive (Thunk -> IO Value)
 
 instance Show Value where
     show (VInt i) = show i
@@ -132,7 +132,7 @@ eval env = do
                 (VClosure th) -> th (\() -> return v2)
                 (VRecursive th) -> do
                     v <- th (\() -> return v1)
-                    case v of 
+                    case v of
                         (VClosure th2) -> th2 (\() -> return v2)
                         _ -> error "expected closure"
                 _ -> error "expected closure"
