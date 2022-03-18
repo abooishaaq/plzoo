@@ -1,12 +1,14 @@
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE FlexibleInstances #-}
 
 module Eval where
 
 import Control.Monad.Except (lift)
 import Data.IORef (IORef, newIORef, readIORef, writeIORef)
+import System.IO ( stdout, hFlush )
 import qualified Data.Map as Map
-import Syntax
 import Type (Type)
+import Syntax
 
 type Thunk = () -> IO Value
 
@@ -15,6 +17,7 @@ data Value
     | VBool Bool
     | VList Type
     | VPair Value Value
+    | VCons Thunk Thunk
     | VClosure (Thunk -> IO Value)
     | VRecursive (Thunk -> IO Value)
 
@@ -26,6 +29,7 @@ instance Show Value where
     show (VList ty) = "[" ++ show ty ++ "]"
     show (VClosure _) = "<closure>"
     show (VRecursive _) = "<recursive>"
+    show (VCons _ _) = "<cons>"
 
 type Env = Map.Map String (IORef Thunk)
 
@@ -45,6 +49,10 @@ mkThunk :: Env -> String -> Expr -> (Thunk -> IO Value)
 mkThunk env x body a = do
     a' <- newIORef a
     eval (Map.insert x a' env) body
+
+mkCons :: Env -> Expr -> Thunk
+mkCons env expr _  = do
+    eval env expr
 
 eval :: Env -> Expr -> IO Value
 eval env = do
@@ -136,3 +144,35 @@ eval env = do
                         (VClosure th2) -> th2 (\() -> return v2)
                         _ -> error "expected closure"
                 _ -> error "expected closure"
+        Cons e1 e2 -> do
+            let v1 = mkCons env e1
+                v2 = mkCons env e2
+            return $ VCons v1 v2
+        Match e1 _ e2 x xs e3 -> do
+            v1 <- eval env e1
+            case v1 of
+                (VList _) -> eval env e2
+                (VCons (th1) (th2)) -> do
+                    v2 <- newIORef th1
+                    v3 <- newIORef th2
+                    eval (Map.insert x v2 (Map.insert xs v3 env)) e3
+                (VRecursive th3) -> do
+                    v <- th3 (\() -> return v1)
+                    case v of
+                        (VCons (th1) (th2)) -> do
+                            v2 <- newIORef th1
+                            v3 <- newIORef th2
+                            eval (Map.insert x v2 (Map.insert xs v3 env)) e3
+                        _ -> error "expected closure"
+                _ -> error "unexpected value in match expression"
+
+printValue :: Value -> IO ()
+printValue = do
+    \case
+        VCons th1 th2 -> do
+            v1 <- th1 ()
+            putStr $ show v1 ++ ","
+            hFlush stdout
+            v2 <- th2 ()
+            printValue v2
+        v -> print v

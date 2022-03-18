@@ -17,7 +17,7 @@ import System.Environment (getArgs)
 import Text.Pretty.Simple (pPrint)
 import qualified Data.Map as Map
 import Check (typeOf, TypeEnv)
-import Eval (eval, Env, Thunk)
+import Eval (eval, Env, Thunk, printValue)
 import Data.IORef (newIORef)
 import Syntax
 
@@ -33,7 +33,7 @@ runTop (t:ts) = do
                 Left e -> liftIO $ print e
                 Right t -> do
                     liftIO $ putStr ("- : " ++ show t ++ " = ")
-                    lift $ eval env e >>= \x -> print x
+                    lift $ eval env e >>= \x -> printValue x
         Def name e -> do
             (env, tenv) <- get
             let res = runExcept $ typeOf tenv e
@@ -44,7 +44,7 @@ runTop (t:ts) = do
                     th <- lift $ newIORef (\() -> return v)
                     put (Map.insert name th env, Map.insert name t tenv)
                     liftIO $ putStr $ name ++ " : " ++ show t ++ " = "
-                    liftIO $ print v
+                    liftIO $ print v 
     runTop ts
 
 runFile :: FilePath -> IO ()

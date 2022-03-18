@@ -2,9 +2,6 @@
 [plzoo](http://plzoo.andrej.com/) in haskell (WIP)
 
 ## todo
-### minihaskell
-- implement rec, cons, and match
-
 ### poly
 - type system is not working
 - add interpreter
